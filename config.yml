@@ -1,0 +1,9 @@
+# This is the Snakemake configuration file that specifies paths and 
+# # and options for the pipeline. Anybody wishing to use
+# # the provided snakemake pipeline should first fill out this file with paths to
+# # their own data, as the Snakefile requires it.
+# # Every config option has reasonable defaults unless it is labeled as "required."
+# # All paths are relative to the directory that Snakemake is executed in.
+# # Note: this file is written in the YAML syntax (https://learnxinyminutes.com/docs/yaml/)
+
+
