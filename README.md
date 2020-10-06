@@ -1,7 +1,7 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.26.1-brightgreen.svg?style=flat-square)](https://snakemake.bitbucket.io)
 
 # str_ase
-Allele-specific expression (ASE) for short tandem repeats (STRs
+Allele-specific expression (ASE) for short tandem repeats (STRs)
 
 # download
 Execute the following command.

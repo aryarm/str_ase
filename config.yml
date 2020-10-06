@@ -1,9 +1,38 @@
 # This is the Snakemake configuration file that specifies paths and 
-# # and options for the pipeline. Anybody wishing to use
-# # the provided snakemake pipeline should first fill out this file with paths to
-# # their own data, as the Snakefile requires it.
-# # Every config option has reasonable defaults unless it is labeled as "required."
-# # All paths are relative to the directory that Snakemake is executed in.
-# # Note: this file is written in the YAML syntax (https://learnxinyminutes.com/docs/yaml/)
+# and options for the pipeline. Anybody wishing to use
+# the provided snakemake pipeline should first fill out this file with paths to
+# their own data, as the Snakefile requires it.
+# Every config option has reasonable defaults unless it is labeled as "required."
+# All paths are relative to the directory that Snakemake is executed in.
+# Note: this file is written in the YAML syntax (https://learnxinyminutes.com/docs/yaml/)
 
 
+# A multi-sample VCF containing STRs
+# The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
+# You can use HipSTR (https://github.com/HipSTR-Tool/HipSTR) to generate the VCF
+# If your VCF is split by chromosome, provide the Unix-style pattern for matching them
+# This input is required!
+vcf: data/str.vcf.gz
+
+# # A multi-sample VCF containing SNPs
+# # The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
+# # The samples in this VCF must match those in the STR VCF
+# # If your VCF is split by chromosome, provide the Unix-style pattern for matching them
+# # This input is required!
+# vcf: data/snp.vcf.gz
+
+# Which samples from the VCF should we execute the pipeline on?
+# Comment out this line or set it to a falsey value if you want to use all of the
+# samples in the VCF
+SAMP_NAMES: []
+
+# If the variants in the VCF are unphased, provide the path to our SNP+STR reference
+# haplotype panel for phasing
+# Provide the path to a directory containing all of the chr*.vcf.gz files from here:
+# http://gymreklab.com/2018/03/05/snpstr_imputation.html
+# If this option is a falsey value, the pipeline will assume all sample VCFs are phased
+ref_panel: data/ref_panel
+
+# Path to the directory in which to output all of the files the pipeline produces
+# Defined relative to whatever directory you execute the snakemake command in
+out: out
