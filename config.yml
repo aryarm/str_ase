@@ -7,24 +7,29 @@
 # Note: this file is written in the YAML syntax (https://learnxinyminutes.com/docs/yaml/)
 
 
-# A multi-sample VCF containing STRs
+# A multi-sample VCF containing STRs in hg19
 # The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
 # You can use HipSTR (https://github.com/HipSTR-Tool/HipSTR) to generate the VCF
 # If your VCF is split by chromosome, provide the Unix-style pattern for matching them
 # This input is required!
-vcf: data/str.vcf.gz
+str_vcf: data/str.vcf.gz
 
-# # A multi-sample VCF containing SNPs
-# # The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
-# # The samples in this VCF must match those in the STR VCF
-# # If your VCF is split by chromosome, provide the Unix-style pattern for matching them
-# # This input is required!
-# vcf: data/snp.vcf.gz
+# A multi-sample VCF containing SNPs in hg38
+# The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
+# The samples in this VCF must match those in the STR VCF _exactly_ (ie same ordering)
+# If your VCF is split by chromosome, provide the Unix-style pattern for matching them
+# This input is required!
+snp_vcf: data/snp.vcf.gz
 
 # Which samples from the VCF should we execute the pipeline on?
 # Comment out this line or set it to a falsey value if you want to use all of the
 # samples in the VCF
 SAMP_NAMES: []
+
+# Path to the hg38 reference genome
+# Must be properly indexed
+# This input is required!
+ref_genome: data/hg38.chr2.42625365.fa
 
 # If the variants in the VCF are unphased, provide the path to our SNP+STR reference
 # haplotype panel for phasing
@@ -32,6 +37,10 @@ SAMP_NAMES: []
 # http://gymreklab.com/2018/03/05/snpstr_imputation.html
 # If this option is a falsey value, the pipeline will assume all sample VCFs are phased
 ref_panel: data/ref_panel
+
+# hg38 to hg19 lift-over chain file
+# required!
+lift_over_chain: data/hg38ToHg19.over.chain.gz
 
 # Path to the directory in which to output all of the files the pipeline produces
 # Defined relative to whatever directory you execute the snakemake command in

@@ -8,6 +8,11 @@ Execute the following command.
 ```
 git clone https://github.com/aryarm/str_ase
 ```
+Also consider downloading the [example data](https://github.com/aryarm/str_ase/releases/latest/download/data.tar.gz).
+```
+cd str_ase
+wget -O- -q https://github.com/aryarm/str_ase/releases/latest/download/data.tar.gz | tar xvzf -
+```
 
 # setup
 The pipeline is written as a Snakefile which can be executed via [Snakemake](https://snakemake.readthedocs.io). We recommend installing version 5.26.1:
@@ -21,7 +26,7 @@ We highly recommend you install [Snakemake via conda](https://snakemake.readthed
     ```
     conda activate snakemake
     ```
-2. Execute the pipeline
+2. Execute the pipeline on the example data
 
     Locally:
     ```
@@ -49,3 +54,5 @@ Defines options and input for the Snakemake pipeline.
 ### run
 An example bash script for executing the pipeline using `snakemake` and `conda`. Any arguments to this script are passed directly to `snakemake`.
 
+### data/
+Example data for the pipeline. You can [download this from the latest release](#download). See the README.md file packaged with the data for more info.
