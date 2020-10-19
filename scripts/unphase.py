@@ -9,6 +9,7 @@ for rec in vcf_in.fetch():
     for sample in rec.samples:
         # BEAGLE complains when there's no allele separator
         # so we have to convert '.' to './.'
+        # (see https://www.biostars.org/p/252067)
         if rec.samples[sample]['GT'] == (None,):
             rec.samples[sample]['GT'] = (None, None)
         # set the genotype as unphased

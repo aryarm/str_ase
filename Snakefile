@@ -29,7 +29,7 @@ rule lift_over:
         ref = config['ref_genome']
     output:
         vcf = config['out']+"/snp.hg19.vcf.gz"
-    conda: "env.yml"
+    conda: "envs/crossmap.yml"
     shell:
         "CrossMap.py vcf {input.chain} {input.vcf} {input.ref} {output.vcf}"
 
@@ -40,7 +40,7 @@ rule vcf_merge:
     output:
         vcf = temp(config['out']+"/merged.vcf.gz")
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
-    conda: "env.yml"
+    conda: "envs/default.yml"
     shell:
         "bcftools concat -o {output.vcf} {input} && tabix -p vcf {output.merged}"
 
@@ -51,7 +51,7 @@ checkpoint vcf_chroms:
         vcf_index = rules.vcf_merge.output.idx
     output:
         chroms = config['out'] + "/merged/chroms.txt"
-    conda: "env.yml"
+    conda: "envs/default.yml"
     shell:
         "tabix --list-chroms {input.vcf} > {output.chroms}"
 
@@ -63,7 +63,7 @@ rule split_vcf_by_chr:
     output:
         vcf = config['out'] + "/merged/{chr}.vcf.gz",
         idx = config['out'] + "/merged/{chr}.vcf.gz.tbi"
-    conda: "env.yml"
+    conda: "envs/default.yml"
     shell:
         "tabix -h {input.vcf} {wildcards.chr} | bgzip > {output.vcf} && "
         "tabix -p {output.vcf}"
@@ -83,7 +83,7 @@ rule conform_gt:
         region = lambda wildcards: wildcards.chr
     output:
         vcf = config['out']+"/consistent/snp.str.chr{chr}.vcf.gz"
-    conda: "env.yml"
+    conda: "envs/default.yml"
     shell:
         "conform-gt gt={input.vcf} ref={input.ref} chrom={params.region} match=POS out={output.vcf}"
 
@@ -93,6 +93,6 @@ rule beagle:
 		ref = config['ref_panel']+"/1kg.snp.str.chr{chr}.vcf.gz"
 	output:
 		vcf = config['out']+"/phased/snp.str.chr{chr}.vcf.gz"
-	conda: "env.yml"
+	conda: "envs/default.yml"
 	shell:
 		"beagle gt={input.gt} ref={input.ref} out={output.vcf}"

@@ -1,0 +1,4 @@
+channels:
+  - nodefaults
+dependencies:
+  - bioconda::crossmap  # not included in the default env because it conflicts for pysam (and python?)

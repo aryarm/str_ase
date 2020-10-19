@@ -19,7 +19,7 @@ The pipeline is written as a Snakefile which can be executed via [Snakemake](htt
 ```
 conda create -n snakemake -c conda-forge --no-channel-priority 'bioconda::snakemake==5.26.1'
 ```
-We highly recommend you install [Snakemake via conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html#installation-via-conda) like this so that you can use the `--use-conda` flag when calling `snakemake` to let it [automatically handle all dependencies](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#integrated-package-management) of the pipeline. Otherwise, you must manually install the dependencies listed in the [env file](env.yml).
+We highly recommend you install [Snakemake via conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html#installation-via-conda) like this so that you can use the `--use-conda` flag when calling `snakemake` to let it [automatically handle all dependencies](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#integrated-package-management) of the pipeline. Otherwise, you must manually install the dependencies listed in the [env files](env/).
 
 # execution
 1. Activate snakemake via `conda`:
@@ -53,6 +53,9 @@ Defines options and input for the Snakemake pipeline.
 
 ### run
 An example bash script for executing the pipeline using `snakemake` and `conda`. Any arguments to this script are passed directly to `snakemake`.
+
+### envs/
+Conda environment files for the dependencies of our pipeline.
 
 ### data/
 Example data for the pipeline. You can [download this from the latest release](#download). See the README.md file packaged with the data for more info.
