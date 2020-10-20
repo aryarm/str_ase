@@ -19,7 +19,7 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 
 
 rule all:
-	input: config['out']+"/phased/snp.str.chr1.vcf.gz"
+    input: config['out']+"/phased/snp.str.chr1.vcf.gz"
 
 rule lift_over:
     """ lift SNP VCF from hg38 to hg19 using CrossMap """
@@ -40,7 +40,7 @@ rule vcf_merge:
     output:
         vcf = temp(config['out']+"/merged.vcf.gz")
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
-    conda: "envs/default.yml"
+    conda: "envs/htslib.yml"
     shell:
         "bcftools concat -o {output.vcf} {input} && tabix -p vcf {output.merged}"
 
@@ -88,11 +88,11 @@ rule conform_gt:
         "conform-gt gt={input.vcf} ref={input.ref} chrom={params.region} match=POS out={output.vcf}"
 
 rule beagle:
-	input:
-		gt = rules.conform_gt.output.vcf,
-		ref = config['ref_panel']+"/1kg.snp.str.chr{chr}.vcf.gz"
-	output:
-		vcf = config['out']+"/phased/snp.str.chr{chr}.vcf.gz"
-	conda: "envs/default.yml"
-	shell:
-		"beagle gt={input.gt} ref={input.ref} out={output.vcf}"
+    input:
+        gt = rules.conform_gt.output.vcf,
+        ref = config['ref_panel']+"/1kg.snp.str.chr{chr}.vcf.gz"
+    output:
+        vcf = config['out']+"/phased/snp.str.chr{chr}.vcf.gz"
+    conda: "envs/default.yml"
+    shell:
+        "beagle gt={input.gt} ref={input.ref} out={output.vcf}"

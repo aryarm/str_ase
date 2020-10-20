@@ -1,0 +1,5 @@
+channels:
+  - nodefaults
+dependencies:
+  - bioconda::bcftools>=1.11
+  - bioconda::samtools>=1.11
