@@ -1,0 +1,38 @@
+# This is a Snakemake configuration file that specifies paths and 
+# and options for the prepare pipeline. Anybody wishing to use
+# the "prepare" Snakemake pipeline should first fill out this file with paths to
+# their own data, as the prepare.smk file requires it.
+# Every config option is required unless it is labeled otherwise.
+# All paths are relative to the directory that Snakemake is executed in.
+# Note: this file is written in the YAML syntax (https://learnxinyminutes.com/docs/yaml/)
+
+
+# Define a region 50 kbp upstream and downstream of the start of the STR
+# TODO: make this optional and use the entire genome by default
+region_hg19: "2:42575365-42675365" # in hg19
+region_hg38: "2:42348225-42448225" # in hg38
+
+# various reference genomes
+ref_genome_hg19: /storage/resources/dbase/human/hg19/Homo_sapiens_assembly19.fasta
+# ref_genome_hg38: /storage/resources/dbase/human/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
+
+# liftOver files
+# TODO: make this optional and download it from ucsc by default
+lift_over: /storage/resources/dbase/human/hg19/hg38ToHg19.over.chain.gz
+
+# VCFs
+snp_vcfs: /storage/resources/datasets/gtex/dbGaP-12604/files/phg001219.v1.GTEx_v8_WGS.genotype-calls-vcf.c1/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.SHAPEIT2_phased.vcf.gz
+str_vcfs: "/storage/massaraa/scratch/str_ase/str/from_gdrive/Filtered_{sample}_hipstr.vcf.gz" # from https://drive.google.com/drive/folders/1C_2IPJxd1q7zrbyeq1aPPPN38o730oss
+
+# haplotype reference panel
+ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr/
+
+# GTEX samples, their SRA IDs, and their STR sample IDs
+# For example:
+# GTEX-NFK9       SRR2155766      GTEX-NFK9-0004
+# GTEX-NL3H       SRR2157426      GTEX-NL3H-0009
+# GTEX-OHPM       SRR2156114      GTEX-OHPM-0003
+# GTEX-OIZF       SRR2157404      GTEX-OIZF-0004
+# GTEX-OXRN       SRR2157433      GTEX-OXRN-0003
+# (where each space '       ' is a tab)
+samples_file: data/samples.tsv

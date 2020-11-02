@@ -58,4 +58,7 @@ An example bash script for executing the pipeline using `snakemake` and `conda`.
 Conda environment files for the dependencies of our pipeline.
 
 ### data/
-Example data for the pipeline. You can [download this from the latest release](#download). See the README.md file packaged with the data for more info.
+Example data for the pipeline, which is available upon request. See the README.md file packaged within the data directory for more info about its contents.
+
+### rules/
+Snakemake rules used by the pipeline. See the [rules README](rules) for more information about each file.
