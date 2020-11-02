@@ -38,16 +38,16 @@ rule vcf_merge:
         str = config['str_vcf'],
         snp = rules.lift_over.output.vcf
     output:
-        vcf = temp(config['out']+"/merged.vcf.gz")
+        vcf = temp(config['out']+"/merged.vcf.gz"),
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
     conda: "envs/htslib.yml"
     shell:
-        "bcftools concat -o {output.vcf} {input} && tabix -p vcf {output.merged}"
+        "bcftools concat -Oz -o {output.vcf} {input} && tabix -p vcf {output.vcf}"
 
 checkpoint vcf_chroms:
     """get the chroms from a VCF"""
     input:
-        vcf = rules.vcf_merge.output.vcf,,
+        vcf = rules.vcf_merge.output.vcf,
         vcf_index = rules.vcf_merge.output.idx
     output:
         chroms = config['out'] + "/merged/chroms.txt"

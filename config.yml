@@ -24,12 +24,13 @@ snp_vcf: data/snp.vcf.gz
 # Which samples from the VCF should we execute the pipeline on?
 # Comment out this line or set it to a falsey value if you want to use all of the
 # samples in the VCF
+# TODO; this option hasn't been implemented yet, so anything here will be ignored
 SAMP_NAMES: []
 
 # Path to the hg38 reference genome
 # Must be properly indexed
 # This input is required!
-ref_genome: data/hg38.chr2.42625365.fa
+ref_genome: data/hg19.chr2.fa
 
 # If the variants in the VCF are unphased, provide the path to our SNP+STR reference
 # haplotype panel for phasing
@@ -41,7 +42,3 @@ ref_panel: data/ref_panel
 # hg38 to hg19 lift-over chain file
 # required!
 lift_over_chain: data/hg38ToHg19.over.chain.gz
-
-# Path to the directory in which to output all of the files the pipeline produces
-# Defined relative to whatever directory you execute the snakemake command in
-out: out
