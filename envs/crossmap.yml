@@ -1,4 +1,5 @@
 channels:
+  - conda-forge
   - nodefaults
 dependencies:
-  - bioconda::crossmap  # not included in the default env because it conflicts for pysam (and python?)
+  - bioconda::crossmap>=0.4.2  # not included in the default env because it conflicts for pysam (and python?)
