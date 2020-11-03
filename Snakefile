@@ -19,7 +19,7 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 
 
 rule all:
-    input: config['out']+"/phased/snp.str.chr1.vcf.gz"
+    input: config['out']+"/phased/snp.str.chr2.vcf.gz"
 
 rule lift_over:
     """ lift SNP VCF from hg38 to hg19 using CrossMap """

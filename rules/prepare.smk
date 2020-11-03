@@ -21,14 +21,6 @@ config['data_dir'] = check_config('data', default='data')
 chr_name = config['region_hg19'].split(':')[0]
 
 def read_samples():
-    """
-        Function to get names and dna fastq paths from a sample file
-        specified in the configuration. Input file is expected to have 3
-        columns: <unique_sample_id> <fastq1_path> <fastq2_path> or
-        <unique_sample_id> <paired_bam_path> <bed_path>. Modify this function
-        as needed to provide a dictionary of sample_id keys and either a tuple
-        of strings: (fastq1, fastq2) OR a single string: paired_bam
-    """
     samp_dict = {}
     for line in csv.reader(open(config['samples_file']), delimiter="\t"):
         if len(line) == 3:
