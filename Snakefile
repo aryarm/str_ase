@@ -1,7 +1,7 @@
 from snakemake.utils import min_version
 
 ##### set minimum snakemake version #####
-min_version("5.26.1")
+min_version("5.27.3")
 
 configfile: "config.yml"
 
@@ -28,15 +28,27 @@ rule lift_over:
         chain = config['lift_over_chain'],
         ref = config['ref_genome']
     output:
-        vcf = config['out']+"/snp.hg19.vcf.gz"
+        vcf = temp(config['out']+"/snp.hg19.vcf"),
+        vcf_unmapped = temp(config['out']+"/snp.hg19.vcf.unmap")
     conda: "envs/crossmap.yml"
     shell:
         "CrossMap.py vcf {input.chain} {input.vcf} {input.ref} {output.vcf}"
 
+rule remove_chr_prefix:
+    """ remove chr prefixes from SNP VCF """
+    input:
+        vcf = rules.lift_over.output.vcf
+    output:
+        vcf = config['out']+"/snp.hg19.vcf.gz"
+    conda: "envs/default.yml"
+    shell:
+        "sed 's/^chr//; s/^##contig=<ID=chr/##contig=<ID=/' {input.vcf} | "
+        "bgzip > {output.vcf}"
+
 rule vcf_merge:
     input:
-        str = config['str_vcf'],
-        snp = rules.lift_over.output.vcf
+        str_vcf = config['str_vcf'],
+        snp_vcf = rules.remove_chr_prefix.output.vcf
     output:
         vcf = temp(config['out']+"/merged.vcf.gz"),
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
