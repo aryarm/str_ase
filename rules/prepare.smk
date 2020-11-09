@@ -88,7 +88,8 @@ rule create_snp_vcf:
     input:
         source = rules.index_snp_source_vcf.output.link,
         source_idx = rules.index_snp_source_vcf.output.index,
-        samples = config['samples_file']
+        samples = config['samples_file'],
+        ref = config['ref_genome_hg38']
     params:
         region = "chr"+config['region_hg38']
     output:
@@ -97,7 +98,7 @@ rule create_snp_vcf:
     conda: "../envs/default.yml"
     shell:
         "bcftools view -r '{params.region}' -S <(cut -f1 {input.samples}) {input.source} -Ov -o- | "
-        "vcf-convert -v 4.1 | bgzip > {output.vcf} && "
+        "vcf-convert -v 4.1 -r {input.ref} | bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
 rule reheader_original_str_vcf:

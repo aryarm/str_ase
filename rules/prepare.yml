@@ -14,7 +14,7 @@ region_hg38: "2:42348225-42448225" # in hg38
 
 # various reference genomes
 ref_genome_hg19: /storage/resources/dbase/human/hg19/Homo_sapiens_assembly19.fasta
-# ref_genome_hg38: /storage/resources/dbase/human/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
+ref_genome_hg38: /storage/resources/dbase/human/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
 
 # liftOver files
 # TODO: make this optional and download it from ucsc by default
