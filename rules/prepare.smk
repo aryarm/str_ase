@@ -4,7 +4,7 @@ from pathlib import Path
 from snakemake.utils import min_version
 
 ##### set minimum snakemake version #####
-min_version("5.26.1")
+min_version("5.27.3")
 
 configfile: "rules/prepare.yml"
 configfile: "config.yml"
@@ -157,11 +157,21 @@ rule create_str_vcf:
     params:
         region = config['region_hg19']
     output:
+        vcf = temp(config['data_dir']+"/str.all-contigs.vcf.gz"),
+    conda: "../envs/htslib.yml"
+    shell:
+        "bcftools view -r '{params.region}' {input.sorted_vcf} -Oz -o {output.vcf}"
+
+rule reheader_final_str_vcf:
+    input:
+        vcf = rules.create_str_vcf.output.vcf,
+        ref_idx = rules.create_ref_genome.output.ref_genome_idx
+    output:
         vcf = config['str_vcf'],
         vcf_idx = config['str_vcf']+".tbi"
     conda: "../envs/htslib.yml"
     shell:
-        "bcftools view -r '{params.region}' {input.sorted_vcf} -Oz -o {output.vcf} && "
+        "bcftools reheader -o {output.vcf} -f {input.ref_idx} {input.vcf} && "
         "tabix -p vcf {output.vcf}"
 
 rule create_ref_panel:
