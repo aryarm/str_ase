@@ -94,9 +94,10 @@ rule create_snp_vcf:
     output:
         vcf = config['snp_vcf'],
         vcf_idx = config['snp_vcf']+".tbi"
-    conda: "../envs/htslib.yml"
+    conda: "../envs/default.yml"
     shell:
-        "bcftools view -r '{params.region}' -S <(cut -f1 {input.samples}) {input.source} -Oz -o {output.vcf} && "
+        "bcftools view -r '{params.region}' -S <(cut -f1 {input.samples}) {input.source} -Ov -o- | "
+        "vcf-convert -v 4.1 | bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
 rule reheader_original_str_vcf:

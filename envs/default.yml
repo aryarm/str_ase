@@ -6,3 +6,4 @@ dependencies:
   - bioconda::samtools>=1.9=h8571acd_10 # other samtools builds lead to libcrypt.so errors
   - bioconda::tabix>=0.2.6
   - bioconda::trtools>=3.0.2
+  - bioconda::vcftools>=0.1.16
