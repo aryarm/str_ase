@@ -54,7 +54,9 @@ rule vcf_merge:
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
     conda: "envs/htslib.yml"
     shell:
-        "bcftools concat -Oz -o {output.vcf} {input} && tabix -p vcf {output.vcf}"
+        "bcftools concat -Ob {input} | "
+        "bcftools sort -Oz -o {output.vcf} && "
+        "tabix -p vcf {output.vcf}"
 
 checkpoint vcf_chroms:
     """get the chroms from a VCF"""
@@ -78,7 +80,7 @@ rule split_vcf_by_chr:
     conda: "envs/default.yml"
     shell:
         "tabix -h {input.vcf} {wildcards.chr} | bgzip > {output.vcf} && "
-        "tabix -p {output.vcf}"
+        "tabix -p vcf {output.vcf}"
 
 def get_split_vcf(wildcards):
     with checkpoints.vcf_chroms.get().output.chroms.open() as f:
