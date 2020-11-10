@@ -173,7 +173,8 @@ rule reheader_final_str_vcf:
         vcf_idx = config['str_vcf']+".tbi"
     conda: "../envs/htslib.yml"
     shell:
-        "bcftools reheader -o {output.vcf} -f {input.ref_idx} {input.vcf} && "
+        "scripts/unphase.py {input.vcf} | "
+        "bcftools reheader -o {output.vcf} -f {input.ref_idx} - && "
         "tabix -p vcf {output.vcf}"
 
 rule create_ref_panel:
