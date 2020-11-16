@@ -58,11 +58,23 @@ rule vcf_merge:
         "bcftools sort -Oz -o {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
+rule remove_empty_alts:
+    input:
+        vcf = rules.vcf_merge.output.vcf,
+        idx = rules.vcf_merge.output.idx
+    output:
+        vcf = temp(config['out']+"/merged.noalts.vcf.gz"),
+        idx = temp(config['out']+"/merged.noalts.vcf.gz.tbi")
+    conda: "envs/htslib.yml"
+    shell:
+        "scripts/remove_empty_alts.py {input.vcf} | bgzip > {output.vcf} && "
+        "tabix -p vcf {output.vcf}"
+
 checkpoint vcf_chroms:
     """get the chroms from a VCF"""
     input:
-        vcf = rules.vcf_merge.output.vcf,
-        vcf_index = rules.vcf_merge.output.idx
+        vcf = rules.remove_empty_alts.output.vcf,
+        vcf_index = rules.remove_empty_alts.output.idx
     output:
         chroms = config['out'] + "/merged/chroms.txt"
     conda: "envs/default.yml"
@@ -72,8 +84,8 @@ checkpoint vcf_chroms:
 rule split_vcf_by_chr:
     """Split the provided VCF file by chromosome and bgzip it"""
     input:
-        vcf = rules.vcf_merge.output.vcf,
-        vcf_index = rules.vcf_merge.output.idx,
+        vcf = rules.remove_empty_alts.output.vcf,
+        vcf_index = rules.remove_empty_alts.output.idx,
     output:
         vcf = config['out'] + "/merged/{chr}.vcf.gz",
         idx = config['out'] + "/merged/{chr}.vcf.gz.tbi"
