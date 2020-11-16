@@ -115,9 +115,24 @@ rule reheader_original_str_vcf:
         "bcftools reheader -f {input.ref_genome_idx} -s <(echo '{params.new_samp_name}') {input.vcf} -o {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
+rule subset_original_str_vcf:
+    input:
+        str_vcf = rules.reheader_original_str_vcf.output.vcf,
+        str_vcf_idx = rules.reheader_original_str_vcf.output.vcf_idx
+    params:
+        region = config['region_hg19']
+    output:
+        vcf = temp(config['data_dir']+"/subset_strs/{sample}.vcf.gz"),
+        vcf_idx = temp(config['data_dir']+"/subset_strs/{sample}.vcf.gz.tbi")
+    conda: "../envs/htslib.yml"
+    shell:
+        "bcftools view -r '{params.region}' {input.str_vcf} -Oz -o {output.vcf} && "
+        "tabix -p vcf {output.vcf}"
+
 rule merge_full_strs:
     input:
-        vcfs = expand(rules.reheader_original_str_vcf.output.vcf, sample=config['SAMP_NAMES'])
+        vcfs = expand(rules.subset_original_str_vcf.output.vcf, sample=config['SAMP_NAMES']),
+        vcf_idxs = expand(rules.subset_original_str_vcf.output.vcf_idx, sample=config['SAMP_NAMES'])
     params:
         vcfs = lambda wildcards, input: ",".join(input.vcfs),
         unzipped_vcf = lambda wildcards, output: Path(output.vcf).with_suffix(''),
@@ -152,29 +167,29 @@ rule sort_full_str_vcf:
         "bcftools sort -Oz -o {output.vcf} {input.reheader_vcf} -T {params.data_dir} && "
         "tabix -p vcf {output.vcf}"
 
-rule create_str_vcf:
+rule unphase_full_str_vcf:
     input:
-        sorted_vcf = rules.sort_full_str_vcf.output.vcf,
-        sorted_vcf_idx = rules.sort_full_str_vcf.output.vcf_idx
-    params:
-        region = config['region_hg19']
+        vcf = rules.sort_full_str_vcf.output.vcf,
+        vcf_idx = rules.sort_full_str_vcf.output.vcf_idx,
+        ref_idx = rules.create_ref_genome.output.ref_genome_idx
     output:
-        vcf = temp(config['data_dir']+"/str.all-contigs.vcf.gz"),
+        vcf = temp(config['data_dir']+"/str-full.unphased.vcf.gz"),
+        vcf_idx = temp(config['data_dir']+"/str-full.unphased.vcf.gz.tbi")
     conda: "../envs/htslib.yml"
     shell:
-        "bcftools view -r '{params.region}' {input.sorted_vcf} -Oz -o {output.vcf}"
+        "scripts/unphase.py {input.vcf} | bgzip > {output.vcf} && "
+        "tabix -p vcf {output.vcf}"
 
 rule reheader_final_str_vcf:
     input:
-        vcf = rules.create_str_vcf.output.vcf,
+        vcf = rules.unphase_full_str_vcf.output.vcf,
         ref_idx = rules.create_ref_genome.output.ref_genome_idx
     output:
         vcf = config['str_vcf'],
         vcf_idx = config['str_vcf']+".tbi"
     conda: "../envs/htslib.yml"
     shell:
-        "scripts/unphase.py {input.vcf} | "
-        "bcftools reheader -o {output.vcf} -f {input.ref_idx} - && "
+        "bcftools reheader -o {output.vcf} -f {input.ref_idx} {input.vcf} && "
         "tabix -p vcf {output.vcf}"
 
 rule create_ref_panel:
@@ -184,5 +199,5 @@ rule create_ref_panel:
         ref_panel = directory(config['ref_panel'])
     conda: "../envs/default.yml"
     shell:
-        "ln -sfn {input.ref_panel} {output.ref_panel}; "
+        "ln -sfn {input.ref_panel} {output.ref_panel} || true; "
         "test -L {output.ref_panel} && test -d {output.ref_panel}"
