@@ -100,6 +100,7 @@ rule create_snp_vcf:
     shell:
         "bcftools view -r '{params.region}' -S <(cut -f1 {input.samples}) {input.source} -Ov -o- | "
         #"vcf-convert -v 4.1 -r {input.ref} | " # TODO: find some way of converting from vcf v4.2 to v4.1 since this doesn't work
+        "grep -Pv '^##contig=<ID=.*(?<!(chr2)),length=' | " # remove all other contig lines from the header
         "bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
