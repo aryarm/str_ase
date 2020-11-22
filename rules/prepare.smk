@@ -47,7 +47,8 @@ rule all:
     input:
         config['str_vcf'], config['snp_vcf'],
         config['ref_genome'], config['ref_panel'],
-        config['lift_over_chain']
+        config['lift_over_chain'],
+        expand(config['genetic_map']+"/plink.chr{chr}.GRCh37.map", chr=chr_name)
 
 rule create_ref_genome:
     input:
@@ -98,7 +99,8 @@ rule create_snp_vcf:
     conda: "../envs/default.yml"
     shell:
         "bcftools view -r '{params.region}' -S <(cut -f1 {input.samples}) {input.source} -Ov -o- | "
-        "vcf-convert -v 4.1 -r {input.ref} | bgzip > {output.vcf} && "
+        #"vcf-convert -v 4.1 -r {input.ref} | " # TODO: find some way of converting from vcf v4.2 to v4.1 since this doesn't work
+        "bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
 rule reheader_original_str_vcf:
@@ -201,3 +203,15 @@ rule create_ref_panel:
     shell:
         "ln -sfn {input.ref_panel} {output.ref_panel} || true; "
         "test -L {output.ref_panel} && test -d {output.ref_panel}"
+
+rule download_plink_map:
+    params:
+        url = "http://bochet.gcc.biostat.washington.edu/beagle/genetic_maps/plink.GRCh37.map.zip",
+        out_dir = lambda wildcards, output: Path(output[0]).parent
+    output:
+        temp(config['genetic_map']+"/plink.GRCh37.map.zip"),
+        expand(config['genetic_map']+"/plink.chr{chr}.GRCh37.map", chr=list(range(1,23))+['X'])
+    conda: "../envs/default.yml"
+    shell:
+        "wget -P {params.out_dir} {params.url} && "
+        "unzip -d {params.out_dir} {output[0]}"

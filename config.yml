@@ -42,3 +42,7 @@ ref_panel: data/ref_panel
 # hg38 to hg19 lift-over chain file
 # required!
 lift_over_chain: data/hg38ToHg19.over.chain.gz
+
+# A directory containing BEAGLE human genetic map files for GRCh37
+# required!
+genetic_map: data/map
