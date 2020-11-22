@@ -3,4 +3,4 @@ channels:
   - nodefaults
 dependencies:
   - pip:
-    - CrossMap # not included in the default env because it conflicts for pysam (and python?)
+    - CrossMap # v0.5.1; not included in the default env because it conflicts for pysam (and python?)

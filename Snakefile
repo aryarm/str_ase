@@ -35,7 +35,7 @@ rule lift_over:
         "CrossMap.py vcf {input.chain} {input.vcf} {input.ref} {output.vcf}"
 
 rule remove_chr_prefix:
-    """ remove chr prefixes from SNP VCF """
+    """ remove chr prefixes and liftOver header lines from SNP VCF """
     input:
         vcf = rules.lift_over.output.vcf
     output:
@@ -43,6 +43,7 @@ rule remove_chr_prefix:
     conda: "envs/default.yml"
     shell:
         "sed 's/^chr//; s/^##contig=<ID=chr/##contig=<ID=/' {input.vcf} | "
+        "grep -Ev '^##(liftOver|originalFile=<|targetRefGenome)' | "
         "bgzip > {output.vcf}"
 
 rule vcf_merge:
