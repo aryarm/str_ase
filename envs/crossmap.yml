@@ -1,6 +1,0 @@
-channels:
-  - conda-forge
-  - nodefaults
-dependencies:
-  - pip:
-    - CrossMap # v0.5.1; not included in the default env because it conflicts for pysam (and python?)

@@ -10,14 +10,14 @@
 # A multi-sample VCF containing STRs in hg19
 # The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
 # You can use HipSTR (https://github.com/HipSTR-Tool/HipSTR) to generate the VCF
-# If your VCF is split by chromosome, provide the Unix-style pattern for matching them
+# TODO: If your VCF is split by chromosome, provide the Unix-style pattern for matching them
 # This input is required!
 str_vcf: data/str.vcf.gz
 
 # A multi-sample VCF containing SNPs in hg38
 # The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
 # The samples in this VCF must match those in the STR VCF _exactly_ (ie same ordering)
-# If your VCF is split by chromosome, provide the Unix-style pattern for matching them
+# TODO: If your VCF is split by chromosome, provide the Unix-style pattern for matching them
 # This input is required!
 snp_vcf: data/snp.vcf.gz
 
@@ -27,10 +27,15 @@ snp_vcf: data/snp.vcf.gz
 # TODO; this option hasn't been implemented yet, so anything here will be ignored
 SAMP_NAMES: []
 
-# Path to the hg38 reference genome
+# Path to the b37 reference genome
 # Must be properly indexed
 # This input is required!
 ref_genome: data/hg19.chr2.fa
+
+# Path to the hg19 reference genome
+# Must be properly indexed with .fai and .dict files
+# This input is required!
+ref_genome_hg19: /storage/resources/dbase/human/hg19/hg19.fa
 
 # If the variants in the VCF are unphased, provide the path to our SNP+STR reference
 # haplotype panel for phasing

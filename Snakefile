@@ -21,38 +21,52 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 rule all:
     input: config['out']+"/phased/snp.str.chr2.vcf.gz"
 
-rule remove_chr_prefix:
-    """ remove chr prefixes from SNP VCF """
+rule lift_over:
+    """ lift SNP VCF from hg38 to hg19 using Picard's LiftoverVcf """
     input:
-        vcf = config['snp_vcf']
+        vcf = config['snp_vcf'],
+        idx = config['snp_vcf']+".tbi",
+        chain = config['lift_over_chain'],
+        ref = config['ref_genome_hg19']
     output:
-        vcf = temp(config['out']+"/snp.no_chr.vcf.gz"),
-        idx = temp(config['out']+"/snp.no_chr.vcf.gz.tbi")
+        vcf = temp(config['out']+"/snp.hg19.vcf.gz"),
+        vcf_unmapped = temp(config['out']+"/snp.hg19.unmap.vcf.gz")
     conda: "envs/default.yml"
     shell:
-        "zcat {input.vcf} | "
+        "gatk LiftoverVcf -I {input.vcf} -O {output.vcf} -C {input.chain} --REJECT {output.vcf_unmapped} -R {input.ref} -WMC true -LFI false"
+
+rule remove_dups:
+    """ remove duplicate variants in the SNP VCF from the liftover """
+    input:
+        vcf = rules.lift_over.output.vcf,
+        ref = config['ref_genome_hg19']
+    output:
+        vcf = temp(config['out']+"/snp.hg19.rmdup.vcf.gz"),
+        idx = temp(config['out']+"/snp.hg19.rmdup.vcf.gz.tbi")
+    conda: "envs/htslib.yml"
+    shell:
+        "bcftools norm -Oz -o {output.vcf} -d all -cx -f {input.ref} {input.vcf} && "
+        "tabix -p vcf {output.vcf}"
+
+rule hg192b37:
+    """ remove chr prefixes from SNP VCF """
+    input:
+        vcf = rules.remove_dups.output.vcf
+    output:
+        vcf = config['out']+"/snp.vcf.gz",
+        idx = config['out']+"/snp.vcf.gz.tbi"
+    conda: "envs/htslib.yml"
+    shell:
+        #"zcat {input.vcf} | "
+        "bcftools view -Ov -o- -r 'chr2' {input.vcf} | " # TODO: remove this line and uncomment the previous one to generalize to all chromosomes
         "sed 's/^chr//; s/^##contig=<ID=chr/##contig=<ID=/' | "
         "bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
-rule lift_over:
-    """ lift SNP VCF from hg38 to hg19 using CrossMap """
-    input:
-        vcf = rules.remove_chr_prefix.output.vcf,
-        idx = rules.remove_chr_prefix.output.idx,
-        chain = config['lift_over_chain'],
-        ref = config['ref_genome']
-    output:
-        vcf = config['out']+"/snp.hg19.vcf",
-        vcf_unmapped = temp(config['out']+"/snp.hg19.vcf.unmap")
-    conda: "envs/crossmap.yml"
-    shell:
-        "CrossMap.py vcf {input.chain} {input.vcf} {input.ref} {output.vcf}"
-
 rule vcf_merge:
     input:
         str_vcf = config['str_vcf'],
-        snp_vcf = rules.lift_over.output.vcf
+        snp_vcf = rules.hg192b37.output.vcf
     output:
         vcf = temp(config['out']+"/merged.vcf.gz"),
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
