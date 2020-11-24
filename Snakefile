@@ -122,28 +122,30 @@ def get_split_vcf(wildcards):
 rule conform_gt:
     input:
         vcf = rules.split_vcf_by_chr.output.vcf,
-        ref =  config['ref_panel']+"/1kg.snp.str.chr{chr}.vcf.gz"
+        ref =  config['ref_panel']+"/1kg.snp.str.chr{chr}.vcf.gz",
+        conform_gt = config['conform_gt_jar']
     params:
-        region = lambda wildcards: "2", # TODO: change this to 'wildcards.chr' later
+        region = lambda wildcards: wildcards.chr,
         vcf_prefix = lambda wildcards, output: output.vcf[:-len(".vcf.gz")]
     output:
         vcf = config['out']+"/consistent/snp.str.chr{chr}.vcf.gz",
         log = temp(config['out']+"/consistent/snp.str.chr{chr}.log")
     conda: "envs/default.yml"
     shell:
-        "conform-gt gt={input.vcf} ref={input.ref} chrom={params.region} match=POS out={params.vcf_prefix}"
+        "java -jar {input.conform_gt} gt={input.vcf} ref={input.ref} chrom={params.region} match=POS out={params.vcf_prefix}"
 
 rule beagle:
     input:
         gt = rules.conform_gt.output.vcf,
         ref = config['ref_panel']+"/1kg.snp.str.chr{chr}.vcf.gz",
-        genetic_map = config['genetic_map']+"/plink.chr{chr}.GRCh37.map"
+        genetic_map = config['genetic_map']+"/plink.chr{chr}.GRCh37.map",
+        beagle = config['beagle_jar']
     params:
-        region = lambda wildcards: "2", # TODO: change this to 'wildcards.chr' later
+        region = lambda wildcards: wildcards.chr,
         vcf_prefix = lambda wildcards, output: output.vcf[:-len(".vcf.gz")]
     output:
         vcf = config['out']+"/phased/snp.str.chr{chr}.vcf.gz",
         log = temp(config['out']+"/phased/snp.str.chr{chr}.log")
     conda: "envs/default.yml"
     shell:
-        "beagle gt={input.gt} ref={input.ref} out={params.vcf_prefix} map={input.genetic_map} chrom={params.region}"
+        "java -jar {input.beagle} gt={input.gt} ref={input.ref} out={params.vcf_prefix} map={input.genetic_map} chrom={params.region}"

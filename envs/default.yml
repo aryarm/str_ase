@@ -1,7 +1,7 @@
 channels:
   - nodefaults
 dependencies:
-  - bioconda::beagle>=5.1_24Aug19.3e8
+  - bioconda::java-jdk>=8.0.112
   - bioconda::bcftools>=1.9
   - bioconda::samtools>=1.9=h8571acd_10 # other samtools builds lead to libcrypt.so errors
   - bioconda::tabix>=0.2.6

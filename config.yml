@@ -48,6 +48,16 @@ ref_panel: data/ref_panel
 # required!
 lift_over_chain: data/hg38ToHg19.over.chain.gz
 
+# path to the jar file for the most recent version of conform-gt (24May16)
+# you can download this from https://faculty.washington.edu/browning/conform-gt.html
+# required!
+conform_gt_jar: ~/bin/installed/beagle.18May20.d20.jar
+
+# path to the jar file for the most recent version of BEAGLE (18May20)
+# you can download this from https://faculty.washington.edu/browning/beagle/beagle.html
+# required!
+beagle_jar: ~/bin/installed/beagle.18May20.d20.jar
+
 # A directory containing BEAGLE human genetic map files for GRCh37
 # required!
 genetic_map: data/map
