@@ -57,8 +57,7 @@ rule hg192b37:
         idx = config['out']+"/snp.vcf.gz.tbi"
     conda: "envs/htslib.yml"
     shell:
-        #"zcat {input.vcf} | "
-        "bcftools view -Ov -o- -r 'chr2' {input.vcf} | " # TODO: remove this line and uncomment the previous one to generalize to all chromosomes
+        "zcat {input.vcf} | "
         "sed 's/^chr//; s/^##contig=<ID=chr/##contig=<ID=/' | "
         "bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"

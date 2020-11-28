@@ -56,6 +56,7 @@ else
 	--use-conda \
 	-k \
 	-j 24 \
+	--notemp \
 	"$@" 2>>"$out_path/log" >>"$out_path/qlog"
 fi
 
