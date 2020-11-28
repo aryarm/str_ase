@@ -1,3 +1,4 @@
+import os
 import csv
 import warnings
 from pathlib import Path
@@ -46,8 +47,8 @@ else:
 rule all:
     input:
         config['str_vcf'], config['snp_vcf'],
-        config['ref_genome'], config['ref_panel'],
-        config['lift_over_chain'],
+        config['ref_genome'], os.path.splitext(config['ref_genome'])[0]+".dict",
+        config['ref_panel'], config['lift_over_chain'],
         expand(config['genetic_map']+"/plink.chr{chr}.GRCh37.map", chr=chr_name)
 
 rule create_ref_genome:
@@ -62,6 +63,15 @@ rule create_ref_genome:
     shell:
         "samtools faidx {input.ref_genome} {params.chr_name} > {output.ref_genome} && "
         "samtools faidx {output.ref_genome}"
+
+rule create_ref_dict:
+    input:
+        ref_genome = config['ref_genome']
+    output:
+        ref_genome_dict = os.path.splitext(config['ref_genome'])[0]+".dict"
+    conda: "../envs/default.yml"
+    shell:
+        "gatk CreateSequenceDictionary -R {input.ref_genome}"
 
 # TODO: make this download from ucsc if the input doesn't exist
 rule create_lift_over:
