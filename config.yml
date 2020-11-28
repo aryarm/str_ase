@@ -51,7 +51,7 @@ lift_over_chain: data/hg38ToHg19.over.chain.gz
 # path to the jar file for the most recent version of conform-gt (24May16)
 # you can download this from https://faculty.washington.edu/browning/conform-gt.html
 # required!
-conform_gt_jar: /home/massaraa/bin/installed/beagle.18May20.d20.jar
+conform_gt_jar: /home/massaraa/bin/installed/conform-gt.24May16.cee.jar
 
 # path to the jar file for the most recent version of BEAGLE (18May20)
 # you can download this from https://faculty.washington.edu/browning/beagle/beagle.html

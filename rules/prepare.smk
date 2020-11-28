@@ -177,8 +177,8 @@ rule sort_full_str_vcf:
         vcf_idx = temp(config['data_dir']+"/str-full.sorted.vcf.gz.tbi")
     conda: "../envs/htslib.yml"
     shell:
-        "bcftools sort -Oz -o {output.vcf} {input.reheader_vcf} -T {params.data_dir} && "
-        "tabix -p vcf {output.vcf}"
+        "bcftools sort -Oz -o {output.vcf} {input.reheader_vcf} -T {params.data_dir}"
+        " && tabix -p vcf {output.vcf}"
 
 rule unphase_full_str_vcf:
     input:
@@ -207,13 +207,17 @@ rule reheader_final_str_vcf:
 
 rule create_ref_panel:
     input:
-        ref_panel = config['ref_panel_dir']
+        ref_panel = config['ref_panel_dir']+"/1kg.snp.str.chr2.vcf.gz",
+        ref_panel_idx = config['ref_panel_dir']+"1kg.snp.str.chr2.vcf.gz.tbi"
+    params:
+        region = config['region_hg19']
     output:
-        ref_panel = directory(config['ref_panel'])
-    conda: "../envs/default.yml"
+        ref_panel = config['ref_panel']+"/1kg.snp.str.chr2.vcf.gz",
+        ref_panel_idx = config['ref_panel']+"/1kg.snp.str.chr2.vcf.gz.tbi"
+    conda: "../envs/htslib.yml"
     shell:
-        "ln -sfn {input.ref_panel} {output.ref_panel} || true; "
-        "test -L {output.ref_panel} && test -d {output.ref_panel}"
+        "bcftools view -r '{params.region}' {input.ref_panel} -Oz -o {output.ref_panel}"
+        " && tabix -p vcf {output.ref_panel}"
 
 rule download_plink_map:
     params:
@@ -221,7 +225,10 @@ rule download_plink_map:
         out_dir = lambda wildcards, output: Path(output[0]).parent
     output:
         temp(config['genetic_map']+"/plink.GRCh37.map.zip"),
-        expand(config['genetic_map']+"/plink.chr{chr}.GRCh37.map", chr=list(range(1,23))+['X'])
+        expand(
+            config['genetic_map']+"/plink.chr{chr}.GRCh37.map",
+            chr=list(range(1,23))+['X']
+        )
     conda: "../envs/default.yml"
     shell:
         "wget -P {params.out_dir} {params.url} && "
