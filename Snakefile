@@ -9,7 +9,7 @@ configfile: "config.yml"
 
 
 def check_config(value, default=False, place=config):
-    """ return true if config value exists and is true """
+    """return true if config value exists and is true"""
     return place[value] if (value in place and place[value]) else default
 
 # set the output directory if it isn't set already
@@ -20,10 +20,14 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 
 
 rule all:
-    input: config['out']+"/phased/snp.str.chr2.vcf.gz"
+    input:
+        expand(
+            config['out']+"/str_counts/{sample}.tsv.gz",
+            sample=[line[0] for line in csv.reader(open("data/samples.tsv"), delimiter="\t")] # TODO: use a checkpoint to retrieve the sample names instead
+        )
 
 rule lift_over:
-    """ lift SNP VCF from hg38 to hg19 using Picard's LiftoverVcf """
+    """lift SNP VCF from hg38 to hg19 using Picard's LiftoverVcf"""
     input:
         vcf = config['snp_vcf'],
         idx = config['snp_vcf']+".tbi",
@@ -37,7 +41,7 @@ rule lift_over:
         "gatk LiftoverVcf -I {input.vcf} -O {output.vcf} -C {input.chain} --REJECT {output.vcf_unmapped} -R {input.ref} -WMC true -LFI false"
 
 rule remove_dups:
-    """ remove duplicate variants in the SNP VCF from the liftover """
+    """remove duplicate variants in the SNP VCF from the liftover"""
     input:
         vcf = rules.lift_over.output.vcf,
         ref = config['ref_genome_hg19']
@@ -50,7 +54,7 @@ rule remove_dups:
         "tabix -p vcf {output.vcf}"
 
 rule hg192b37:
-    """ remove chr prefixes from SNP VCF """
+    """remove chr prefixes from SNP VCF"""
     input:
         vcf = rules.remove_dups.output.vcf
     output:
@@ -144,7 +148,7 @@ rule beagle:
         "java -jar {input.beagle} gt={input.gt} ref={input.ref} out={params.vcf_prefix} map={input.genetic_map} chrom={params.region}"
 
 rule index_beagle:
-    """ properly bgzip the output of beagle and add contigs to the header """
+    """properly bgzip the output of beagle and add contigs to the header"""
     input:
         vcf = rules.beagle.output.vcf,
         ref = config['ref_genome']+".fai"
