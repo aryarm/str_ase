@@ -49,12 +49,12 @@ ref_panel: data/ref_panel
 # required!
 lift_over_chain: data/hg38ToHg19.over.chain.gz
 
-# path to the jar file for the most recent version of conform-gt (24May16)
+# Path to the jar file for the most recent version of conform-gt (24May16)
 # you can download this from https://faculty.washington.edu/browning/conform-gt.html
 # required!
 conform_gt_jar: /home/massaraa/bin/installed/conform-gt.24May16.cee.jar
 
-# path to the jar file for the most recent version of BEAGLE (18May20)
+# Path to the jar file for the most recent version of BEAGLE (18May20)
 # you can download this from https://faculty.washington.edu/browning/beagle/beagle.html
 # required!
 beagle_jar: /home/massaraa/bin/installed/beagle.18May20.d20.jar
@@ -62,3 +62,11 @@ beagle_jar: /home/massaraa/bin/installed/beagle.18May20.d20.jar
 # A directory containing BEAGLE human genetic map files for GRCh37
 # required!
 genetic_map: data/map
+
+# Path to the WASP-corrected ASE counts for the SNPs
+# Must be a string to the path of each file with the "{sample}" wildcard replacing the
+# sample name. The sample names must match those in the VCF.
+# This file must be a gzipped TSV containing at least the following columns:
+# CHR,POS,VARIANT_ID,REF_ALLELE,ALT_ALLELE,SAMPLE_ID,SUBJECT_ID,TISSUE_ID,REF_COUNT,
+# ALT_COUNT,TOTAL_COUNT,REF_RATIO,OTHER_ALLELE_COUNT
+snp_counts: "data/snp_counts/{sample}.v8.wasp_corrected.ase_table.tsv.gz"

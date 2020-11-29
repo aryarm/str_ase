@@ -43,3 +43,6 @@ ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr/
 # GTEX-OXRN       SRR2157433      GTEX-OXRN-0003
 # (where each space '       ' is a tab)
 samples_file: data/samples.tsv
+
+# Path to a directory containing the WASP-corrected ASE counts for the SNPs
+snp_counts_dir: /storage/resources/datasets/gtex/dbGaP-12604/files/phe000039.v1.GTEx_v8_ASE_WASP.expression-matrixfmt-ase.c1/GTEx_Analysis_v8_ASE_WASP_counts_by_subject

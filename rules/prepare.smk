@@ -48,7 +48,10 @@ rule all:
     input:
         config['str_vcf'], config['snp_vcf'],
         config['ref_genome'], os.path.splitext(config['ref_genome'])[0]+".dict",
-        config['ref_panel'], config['lift_over_chain'],
+        config['ref_panel'], config['lift_over_chain'], expand(
+            config['snp_counts'],
+            sample=[SAMP[samp][0] for samp in config['SAMP_NAMES']]
+        ),
         expand(config['genetic_map']+"/plink.chr{chr}.GRCh37.map", chr=chr_name)
 
 rule create_ref_genome:
@@ -207,13 +210,13 @@ rule reheader_final_str_vcf:
 
 rule create_ref_panel:
     input:
-        ref_panel = config['ref_panel_dir']+"/1kg.snp.str.chr2.vcf.gz",
-        ref_panel_idx = config['ref_panel_dir']+"1kg.snp.str.chr2.vcf.gz.tbi"
+        ref_panel = config['ref_panel_dir']+"/1kg.snp.str.chr"+chr_name+".vcf.gz",
+        ref_panel_idx = config['ref_panel_dir']+"1kg.snp.str.chr"+chr_name+".vcf.gz.tbi"
     params:
         region = config['region_hg19']
     output:
-        ref_panel = config['ref_panel']+"/1kg.snp.str.chr2.vcf.gz",
-        ref_panel_idx = config['ref_panel']+"/1kg.snp.str.chr2.vcf.gz.tbi"
+        ref_panel = config['ref_panel']+"/1kg.snp.str.chr"+chr_name+".vcf.gz",
+        ref_panel_idx = config['ref_panel']+"/1kg.snp.str.chr"+chr_name+".vcf.gz.tbi"
     conda: "../envs/htslib.yml"
     shell:
         "bcftools view -r '{params.region}' {input.ref_panel} -Oz -o {output.ref_panel}"
@@ -233,3 +236,12 @@ rule download_plink_map:
     shell:
         "wget -P {params.out_dir} {params.url} && "
         "unzip -d {params.out_dir} {output[0]}"
+
+rule create_snp_counts:
+    input:
+        snp_counts = config['snp_counts_dir']+"/"+Path(config['snp_counts']).name
+    output:
+        snp_counts = config['snp_counts']
+    conda: "../envs/default.yml"
+    shell:
+        "ln -sf {input.snp_counts} {output.snp_counts}"

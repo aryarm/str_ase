@@ -1,3 +1,4 @@
+import csv
 from snakemake.utils import min_version
 
 ##### set minimum snakemake version #####
@@ -94,7 +95,7 @@ checkpoint vcf_chroms:
         vcf_index = rules.remove_empty_alts.output.idx
     output:
         chroms = config['out'] + "/merged/chroms.txt"
-    conda: "envs/default.yml"
+    conda: "envs/htslib.yml"
     shell:
         "tabix --list-chroms {input.vcf} > {output.chroms}"
 
@@ -106,17 +107,10 @@ rule split_vcf_by_chr:
     output:
         vcf = config['out'] + "/merged/{chr}.vcf.gz",
         idx = config['out'] + "/merged/{chr}.vcf.gz.tbi"
-    conda: "envs/default.yml"
+    conda: "envs/htslib.yml"
     shell:
         "tabix -h {input.vcf} {wildcards.chr} | bgzip > {output.vcf} && "
         "tabix -p vcf {output.vcf}"
-
-def get_split_vcf(wildcards):
-    with checkpoints.vcf_chroms.get().output.chroms.open() as f:
-        return expand(
-            rules.split_vcf_by_chr.output,
-            chr=filter(lambda x: len(x), f.read().split('\n'))
-        )
 
 rule conform_gt:
     input:
@@ -161,3 +155,52 @@ rule index_beagle:
     shell:
         "bcftools reheader -o {output.vcf} -f {input.ref} {input.vcf} && "
         "tabix -p vcf {output.vcf}"
+
+def get_split_vcf(wildcards):
+    """get the output of index_beagle expanded for every chromosome"""
+    with checkpoints.vcf_chroms.get().output.chroms.open() as f:
+        return expand(
+            rules.index_beagle.output.vcf,
+            chr=filter(lambda x: len(x), f.read().split('\n'))
+        )
+
+rule merge_beagle:
+    """merge the beagle output across all chromosomes"""
+    input:
+        vcfs = get_split_vcf
+    output:
+        vcf = config['out']+"/phased.vcf.gz",
+        idx = config['out']+"/phased.vcf.gz.tbi"
+    conda: "envs/htslib.yml"
+    shell:
+        "bcftools concat -Ob -l {input} | "
+        "bcftools sort -Oz -o {output.vcf} && "
+        "tabix -p vcf {output.vcf}"
+
+checkpoint vcf_samples:
+    """get the sample IDs from the merged VCF"""
+    input:
+        vcf = rules.merge_beagle.output.vcf,
+        vcf_index = rules.merge_beagle.output.idx
+    output:
+        samples = config['out'] + "/merged/samples.txt"
+    conda: "envs/htslib.yml"
+    shell:
+        "bcftools query -l {input.vcf} > {output.samples}"
+
+rule str_counts:
+    """get per sample read counts of STRs from surrounding SNPs"""
+    input:
+        vcf = rules.merge_beagle.output.vcf,
+        idx = rules.merge_beagle.output.idx,
+        snp_counts = config['snp_counts']
+    output:
+        counts = config['out']+"/str_counts/{sample}.tsv.gz"
+    conda: "envs/default.yml"
+    shell:
+        "scripts/as_counts.py {input.vcf} {input.counts} {wildcards.sample} > {output.counts}"
+
+def get_vcf_samples(wildcards):
+    """get the output of ____ for every sample"""
+    with checkpoints.vcf_samples.get().output.samples.open() as f:
+        return f.read().split('\n')
