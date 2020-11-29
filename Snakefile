@@ -143,8 +143,21 @@ rule beagle:
         region = lambda wildcards: wildcards.chr,
         vcf_prefix = lambda wildcards, output: output.vcf[:-len(".vcf.gz")]
     output:
-        vcf = config['out']+"/phased/snp.str.chr{chr}.vcf.gz",
-        log = temp(config['out']+"/phased/snp.str.chr{chr}.log")
+        vcf = temp(config['out']+"/phased/snp.str.chr{chr}.ungz.vcf.gz"),
+        log = temp(config['out']+"/phased/snp.str.chr{chr}.ungz.log")
     conda: "envs/default.yml"
     shell:
         "java -jar {input.beagle} gt={input.gt} ref={input.ref} out={params.vcf_prefix} map={input.genetic_map} chrom={params.region}"
+
+rule index_beagle:
+    """ properly bgzip the output of beagle and add contigs to the header """
+    input:
+        vcf = rules.beagle.output.vcf,
+        ref = config['ref_genome']+".fai"
+    output:
+        vcf = config['out']+"/phased/snp.str.chr{chr}.vcf.gz",
+        idx = config['out']+"/phased/snp.str.chr{chr}.vcf.gz.tbi",
+    conda: "envs/htslib.yml"
+    shell:
+        "bcftools reheader -o {output.vcf} -f {input.ref} {input.vcf} && "
+        "tabix -p vcf {output.vcf}"
