@@ -7,7 +7,7 @@
 # Note: this file is written in the YAML syntax (https://learnxinyminutes.com/docs/yaml/)
 
 
-# A multi-sample VCF containing STRs in hg19
+# A multi-sample VCF containing STRs in hg19 (ie b37)
 # The VCF must be bgzipped and a .tbi index must exist in the same directory as the VCF
 # You can use HipSTR (https://github.com/HipSTR-Tool/HipSTR) to generate the VCF
 # TODO: If your VCF is split by chromosome, provide the Unix-style pattern for matching them
@@ -24,7 +24,7 @@ snp_vcf: data/snp.vcf.gz
 # Which samples from the VCF should we execute the pipeline on?
 # Comment out this line or set it to a falsey value if you want to use all of the
 # samples in the VCF
-# TODO; this option hasn't been implemented yet, so anything here will be ignored
+# TODO: this option hasn't been implemented yet, so anything here will be ignored
 SAMP_NAMES: []
 
 # Path to the b37 reference genome
@@ -41,6 +41,7 @@ ref_genome_hg19: /storage/resources/dbase/human/hg19/hg19.fa
 # haplotype panel for phasing
 # Provide the path to a directory containing all of the chr*.vcf.gz files from here:
 # http://gymreklab.com/2018/03/05/snpstr_imputation.html
+# The coordinates in the ref panel are assumed to come from the b37 reference genome
 # If this option is a falsey value, the pipeline will assume all sample VCFs are phased
 ref_panel: data/ref_panel
 

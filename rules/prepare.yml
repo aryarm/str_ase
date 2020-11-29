@@ -12,21 +12,25 @@
 region_hg19: "2:42575365-42675365" # in hg19 (specifically, b37)
 region_hg38: "2:42348225-42448225" # in hg38
 
-
 # various reference genomes
-ref_genome_hg19: /storage/resources/dbase/human/hg19/Homo_sapiens_assembly19.fasta
+ref_genome_hg19: /storage/resources/dbase/human/hg19/Homo_sapiens_assembly19.fasta # the b37 ref genome
 ref_genome_hg38: /storage/resources/dbase/human/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
 
-# liftOver files
+# liftOver file
+# you can download this file from
+# http://hgdownload.soe.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz
 # TODO: make this optional and download it from ucsc by default
 lift_over: /storage/resources/dbase/human/hg19/hg38ToHg19.over.chain.gz
 
 # VCFs
+# Provide a string containing the path to the file
+# If there files are per sample, replace the sample name with "{sample}"
 snp_vcfs: /storage/resources/datasets/gtex/dbGaP-12604/files/phg001219.v1.GTEx_v8_WGS.genotype-calls-vcf.c1/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.SHAPEIT2_phased.vcf.gz
 str_vcfs: "/storage/massaraa/scratch/str_ase/str/from_gdrive/Filtered_{sample}_hipstr.vcf.gz" # from https://drive.google.com/drive/folders/1C_2IPJxd1q7zrbyeq1aPPPN38o730oss
 
 # haplotype reference panel
-# you can download the contents of this directory from s3://snp-str-imputation/1000genomes
+# you can download the contents of this directory from
+# s3://snp-str-imputation/1000genomes
 # see https://gymreklab.com/2018/03/05/snpstr_imputation.html for more info
 ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr/
 
