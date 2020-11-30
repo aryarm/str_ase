@@ -70,3 +70,8 @@ genetic_map: data/map
 # CHR,POS,VARIANT_ID,REF_ALLELE,ALT_ALLELE,SAMPLE_ID,SUBJECT_ID,TISSUE_ID,REF_COUNT,
 # ALT_COUNT,TOTAL_COUNT,REF_RATIO,OTHER_ALLELE_COUNT
 snp_counts: "data/snp_counts/{sample}.v8.wasp_corrected.ase_table.tsv.gz"
+
+# Path to GENCODE gene annotations (release 35) for GRCh37
+# You can download this file from
+# https://www.gencodegenes.org/human/release_35lift37.html
+genes: data/gencode.v35lift37.annotation.gff3.gz

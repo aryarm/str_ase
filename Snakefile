@@ -181,6 +181,16 @@ rule merge_beagle:
         "bcftools sort -Oz -o {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
+rule lift_counts:
+    input:
+        counts = config['snp_counts'],
+        chain = config['lift_over_chain']
+    output:
+        counts = config['out']+"/snp_counts/{sample}.tsv.gz"
+    conda: "envs/default.yml"
+    shell:
+        "scripts/liftover_counts.py {input} > {output.counts}"
+
 checkpoint vcf_samples:
     """get the sample IDs from the merged VCF"""
     input:
@@ -197,12 +207,13 @@ rule str_counts:
     input:
         vcf = rules.merge_beagle.output.vcf,
         idx = rules.merge_beagle.output.idx,
-        snp_counts = config['snp_counts']
+        snp_counts = rules.lift_counts.output.counts,
+        genes = config['genes']
     output:
         counts = config['out']+"/str_counts/{sample}.tsv.gz"
-    conda: "envs/default.yml"
+    conda: "envs/htslib.yml"
     shell:
-        "scripts/as_counts.py {input.vcf} {input.counts} {wildcards.sample} > {output.counts}"
+        "scripts/as_counts.py {input.vcf} {input.counts} {input.genes} {wildcards.sample} > {output.counts}"
 
 def get_vcf_samples(wildcards):
     """get the output of ____ for every sample"""
