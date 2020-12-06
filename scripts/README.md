@@ -4,6 +4,9 @@ This directory contains various scripts used by the pipeline.
 ### [as_counts.py](as_counts.py)
 A python script that retrieves unbiased ASE counts of reads overlapping STRs using WASP-corrected counts of reads from SNPs nearby.
 
+### [liftover_counts.py](liftover_counts.py)
+A python script for lifting over TSVs whose first two columns are CHROM and POS, respectively.
+
 ### [unphase.py](unphase.py)
 A python script that can be used to unphase the genotypes in a VCF in preparation for use by BEAGLE. This script is used by the `prepare` pipeline.
 
