@@ -21,10 +21,7 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 
 rule all:
     input:
-        expand(
-            config['out']+"/str_counts/{sample}.tsv.gz",
-            sample=[line[0] for line in csv.reader(open("data/samples.tsv"), delimiter="\t")] # TODO: use a checkpoint to retrieve the sample names instead
-        )
+        config['out']+"/str_counts.tsv.gz"
 
 rule lift_over:
     """lift SNP VCF from hg38 to hg19 using Picard's LiftoverVcf"""
@@ -193,31 +190,47 @@ rule lift_counts:
         "sed 's/^chr//' | "
         "gzip > {output.counts}"
 
+rule str_counts:
+    """get per sample read counts of STRs from surrounding SNPs"""
+    input:
+        vcf = rules.merge_beagle.output.vcf,
+        idx = rules.merge_beagle.output.idx,
+        counts = rules.lift_counts.output.counts
+    output:
+        counts = config['out']+"/str_counts/{sample}.tsv.gz"
+    conda: "envs/htslib.yml"
+    shell:
+        "scripts/as_counts.py {input.counts} {wildcards.sample} "
+        "{input.vcf} | gzip > {output.counts}"
+
 checkpoint vcf_samples:
     """get the sample IDs from the merged VCF"""
     input:
         vcf = rules.merge_beagle.output.vcf,
         vcf_index = rules.merge_beagle.output.idx
     output:
-        samples = config['out'] + "/merged/samples.txt"
+        samples = config['out'] + "/phased/samples.txt"
     conda: "envs/htslib.yml"
     shell:
         "bcftools query -l {input.vcf} > {output.samples}"
 
-rule str_counts:
-    """get per sample read counts of STRs from surrounding SNPs"""
-    input:
-        vcf = rules.merge_beagle.output.vcf,
-        idx = rules.merge_beagle.output.idx,
-        snp_counts = rules.lift_counts.output.counts,
-        genes = config['genes']
-    output:
-        counts = config['out']+"/str_counts/{sample}.tsv.gz"
-    conda: "envs/htslib.yml"
-    shell:
-        "scripts/as_counts.py {input.vcf} {input.counts} {input.genes} {wildcards.sample} > {output.counts}"
-
-def get_vcf_samples(wildcards):
-    """get the output of ____ for every sample"""
+def get_split_counts(wildcards):
+    """get the output of str_counts for every sample"""
     with checkpoints.vcf_samples.get().output.samples.open() as f:
-        return f.read().split('\n')
+        return expand(
+            rules.str_counts.output.counts,
+            sample=filter(lambda x: len(x), f.read().split('\n'))
+        )
+
+rule merge_str_counts:
+    """merge str_counts TSVs across all samples and sort on str, tissue, subject"""
+    input:
+        counts = get_split_counts
+    output:
+        merged = config['out']+"/str_counts.tsv.gz"
+    conda: "envs/default.yml"
+    shell:
+        "zcat {input.counts} | ("
+        "read -r head && echo \"$head\"; "
+        "grep -Fxv \"$head\" | sort -k2,2 -k1,1 -k14,14"
+        ") | gzip > {output.merged}"
