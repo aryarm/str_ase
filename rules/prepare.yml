@@ -8,6 +8,7 @@
 
 
 # Define a region 50 kbp upstream and downstream of the start of the STR
+# Note: do not prefix the contig with 'chr'!
 # TODO: make this optional and use the entire genome by default
 region_hg19: "2:42575365-42675365" # in hg19 (specifically, b37)
 region_hg38: "2:42348225-42448225" # in hg38
@@ -44,5 +45,12 @@ ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr/
 # (where each space '       ' is a tab)
 samples_file: data/samples.tsv
 
-# Path to a directory containing the WASP-corrected ASE counts for the SNPs
-snp_counts_dir: /storage/resources/datasets/gtex/dbGaP-12604/files/phe000039.v1.GTEx_v8_ASE_WASP.expression-matrixfmt-ase.c1/GTEx_Analysis_v8_ASE_WASP_counts_by_subject
+# Path to the WASP-corrected ASE counts for the SNPs
+# Must be a string to the path of each file with the "{sample}" wildcard replacing the
+# sample name. The sample names must match those in the VCF.
+# This file must be a gzipped TSV containing at least the following columns:
+# CHR,POS,SAMPLE_ID,SUBJECT_ID,TISSUE_ID,REF_ALLELE,
+# ALT_ALLELE,REF_COUNT,ALT_COUNT,TOTAL_COUNT,REF_RATIO,
+# OTHER_ALLELE_COUNT,BINOM_P,BINOM_P_ADJUSTED,GENOTYPE,
+# VARIANT_ANNOTATION,GENE_ID
+snp_counts_full: "/storage/resources/datasets/gtex/dbGaP-12604/phe000039.v1.GTEx_v8_ASE_WASP.expression-matrixfmt-ase.c1/GTEx_Analysis_v8_ASE_WASP_counts_by_subject/{sample}.v8.wasp_corrected.ase_table.tsv.gz"

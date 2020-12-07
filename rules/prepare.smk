@@ -230,18 +230,27 @@ rule download_plink_map:
         temp(config['genetic_map']+"/plink.GRCh37.map.zip"),
         expand(
             config['genetic_map']+"/plink.chr{chr}.GRCh37.map",
-            chr=list(range(1,23))+['X']
+            chr=chr_name
         )
     conda: "../envs/default.yml"
+    shadow: "minimal"
     shell:
         "wget -P {params.out_dir} {params.url} && "
         "unzip -d {params.out_dir} {output[0]}"
 
 rule create_snp_counts:
     input:
-        snp_counts = config['snp_counts_dir']+"/"+Path(config['snp_counts']).name
+        snp_counts = config['snp_counts_full']
+    params:
+        chr_name = "chr"+chr_name,
+        start = config['region_hg38'].split(':')[1].split('-')[0],
+        end = config['region_hg38'].split(':')[1].split('-')[1],
     output:
         snp_counts = config['snp_counts']
     conda: "../envs/default.yml"
     shell:
-        "ln -sf {input.snp_counts} {output.snp_counts}"
+        "zcat {input.snp_counts} | ("
+        "read -r head && echo \"$head\"; "
+        "awk -F '\\t' -v 'OFS=\\t' "
+        "'$1 == \"{params.chr_name}\" && $2 < {params.end} && $2 > {params.start}'"
+        ") | gzip > {output.snp_counts}"

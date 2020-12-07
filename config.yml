@@ -67,11 +67,13 @@ genetic_map: data/map
 # Must be a string to the path of each file with the "{sample}" wildcard replacing the
 # sample name. The sample names must match those in the VCF.
 # This file must be a gzipped TSV containing at least the following columns:
-# CHR,POS,VARIANT_ID,REF_ALLELE,ALT_ALLELE,SAMPLE_ID,SUBJECT_ID,TISSUE_ID,REF_COUNT,
-# ALT_COUNT,TOTAL_COUNT,REF_RATIO,OTHER_ALLELE_COUNT
+# CHR,POS,SAMPLE_ID,SUBJECT_ID,TISSUE_ID,REF_ALLELE,
+# ALT_ALLELE,REF_COUNT,ALT_COUNT,TOTAL_COUNT,REF_RATIO,
+# OTHER_ALLELE_COUNT,BINOM_P,BINOM_P_ADJUSTED,GENOTYPE,
+# VARIANT_ANNOTATION,GENE_ID
 snp_counts: "data/snp_counts/{sample}.v8.wasp_corrected.ase_table.tsv.gz"
 
-# Path to GENCODE gene annotations (release 35) for GRCh37
-# You can download this file from
-# https://www.gencodegenes.org/human/release_35lift37.html
-genes: data/gencode.v35lift37.annotation.gff3.gz
+# Which tissue IDs should be used? This must correspond with the tissue IDs in the
+# snp_counts files
+# TODO: If set to a falsey value or left empty, all tissues will be used
+tissues: [LUNG]
