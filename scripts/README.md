@@ -7,6 +7,9 @@ A python script that retrieves unbiased ASE counts of reads overlapping STRs usi
 ### [liftover_counts.py](liftover_counts.py)
 A python script for lifting over TSVs whose first two columns are CHROM and POS, respectively.
 
+### [prioritize_STRs.py](prioritize_STRs.py)
+A python script for sorting STRs by a custom importance metric consisting of the number of supporting samples, the distance from the nearest SNP, and the strength of the ASE at the nearest SNP.
+
 ### [unphase.py](unphase.py)
 A python script that can be used to unphase the genotypes in a VCF in preparation for use by BEAGLE. This script is used by the `prepare` pipeline.
 

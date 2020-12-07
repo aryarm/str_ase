@@ -232,5 +232,15 @@ rule merge_str_counts:
     shell:
         "zcat {input.counts} | ("
         "read -r head && echo \"$head\"; "
-        "grep -Fxv \"$head\" | sort -k2,2 -k1,1 -k14,14"
+        "grep -Fxv \"$head\""
         ") | gzip > {output.merged}"
+
+rule prioritize:
+    """compute an importance metric for each STR and then sort by that metric"""
+    input:
+        counts = rules.merge_str_counts.output.merged
+    output:
+        counts = config['out']+"/str_counts.sort.tsv.gz"
+    conda: "envs/htslib.yml"
+    shell:
+        "scripts/prioritize_STRs.py {input} {output}"
