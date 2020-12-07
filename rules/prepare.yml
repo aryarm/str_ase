@@ -33,7 +33,7 @@ str_vcfs: "/storage/massaraa/scratch/str_ase/str/from_gdrive/Filtered_{sample}_h
 # you can download the contents of this directory from
 # s3://snp-str-imputation/1000genomes
 # see https://gymreklab.com/2018/03/05/snpstr_imputation.html for more info
-ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr/
+ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr
 
 # GTEX samples and their SRA IDs
 # For example:

@@ -8,5 +8,7 @@ dependencies:
   - bioconda::trtools>=3.0.2
   - conda-forge::openjdk # satisfies gatk4, which needs a newer version of openjdk than what is available on bioconda
   - bioconda::gatk4>=4.1.9.0
+  - conda-forge::gawk>=5.1.0
+  - conda-forge::coreutils>=8.31
   - pip:
     - liftover>=1.1.6

@@ -212,7 +212,7 @@ rule reheader_final_str_vcf:
 rule create_ref_panel:
     input:
         ref_panel = config['ref_panel_dir']+"/1kg.snp.str.chr"+chr_name+".vcf.gz",
-        ref_panel_idx = config['ref_panel_dir']+"1kg.snp.str.chr"+chr_name+".vcf.gz.tbi"
+        ref_panel_idx = config['ref_panel_dir']+"/1kg.snp.str.chr"+chr_name+".vcf.gz.tbi"
     params:
         region = config['region_hg19']
     output:
@@ -239,13 +239,22 @@ rule download_plink_map:
         "wget -P {params.out_dir} {params.url} && "
         "unzip -d {params.out_dir} {output[0]}"
 
+region_extremes = config['region_hg38'].split(':')
+if len(region_extremes) > 1:
+    region_extremes = region_extremes[1].split('-')
+    chr_start = region_extremes[0]
+    chr_end = region_extremes[1]
+else:
+    chr_start = 0
+    chr_end = "-log(0)"
+
 rule create_snp_counts:
     input:
         snp_counts = config['snp_counts_full']
     params:
         chr_name = "chr"+chr_name,
-        start = config['region_hg38'].split(':')[1].split('-')[0],
-        end = config['region_hg38'].split(':')[1].split('-')[1],
+        start = chr_start,
+        end = chr_end,
     output:
         snp_counts = config['snp_counts']
     conda: "../envs/default.yml"
