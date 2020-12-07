@@ -10,8 +10,8 @@
 # Define a region 50 kbp upstream and downstream of the start of the STR
 # Note: do not prefix the contig with 'chr'!
 # TODO: make this optional and use the entire genome by default
-region_hg19: "2:42575365-42675365" # in hg19 (specifically, b37)
-region_hg38: "2:42348225-42448225" # in hg38
+region_hg19: "2" # in hg19 (specifically, b37)
+region_hg38: "2" # in hg38
 
 # various reference genomes
 ref_genome_hg19: /storage/resources/dbase/human/hg19/Homo_sapiens_assembly19.fasta # the b37 ref genome
