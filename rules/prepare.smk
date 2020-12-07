@@ -57,7 +57,7 @@ rule all:
 
 rule create_ref_genome:
     input:
-        ref_genome = config['ref_genome_hg19']
+        ref_genome = config['ref_genome_b37']
     params:
         chr_name = chr_name
     output:
@@ -121,7 +121,7 @@ rule create_snp_vcf:
 rule reheader_original_str_vcf:
     input:
         vcf = config['str_vcfs'],
-        ref_genome_idx = config['ref_genome_hg19']+".fai"
+        ref_genome_idx = config['ref_genome_b37']+".fai"
     params:
         new_samp_name = lambda wildcards: SAMP[wildcards.sample]
     output:
@@ -163,7 +163,7 @@ rule merge_full_strs:
 
 rule reheader_full_str_vcf:
     input:
-        ref_genome_idx = config['ref_genome_hg19']+".fai",
+        ref_genome_idx = config['ref_genome_b37']+".fai",
         full_vcf = rules.merge_full_strs.output.vcf
     output:
         vcf = temp(config['data_dir']+"/str-full.reheader.vcf.gz")
