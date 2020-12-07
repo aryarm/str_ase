@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import argparse
-import numpy as np
 import pandas as pd
 from pysam import VariantFile
 from types import SimpleNamespace
