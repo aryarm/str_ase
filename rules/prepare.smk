@@ -24,8 +24,8 @@ chr_name = config['region_hg19'].split(':')[0]
 def read_samples():
     samp_dict = {}
     for line in csv.reader(open(config['samples_file']), delimiter="\t"):
-        if len(line) == 3:
-            samp_dict[line[1]] = [line[0], line[2]]
+        if len(line) == 2:
+            samp_dict[line[1]] = line[0]
         else:
             raise ValueError('Your samples_file is not formatted correctly. Make sure that it has the correct number of tab-separated columns for every row.')
     return samp_dict
@@ -48,9 +48,10 @@ rule all:
     input:
         config['str_vcf'], config['snp_vcf'],
         config['ref_genome'], os.path.splitext(config['ref_genome'])[0]+".dict",
-        config['ref_panel'], config['lift_over_chain'], expand(
+        config['ref_panel']+"/1kg.snp.str.chr"+chr_name+".vcf.gz",
+        config['lift_over_chain'], expand(
             config['snp_counts'],
-            sample=[SAMP[samp][0] for samp in config['SAMP_NAMES']]
+            sample=[SAMP[samp] for samp in config['SAMP_NAMES']]
         ),
         expand(config['genetic_map']+"/plink.chr{chr}.GRCh37.map", chr=chr_name)
 
@@ -122,7 +123,7 @@ rule reheader_original_str_vcf:
         vcf = config['str_vcfs'],
         ref_genome_idx = config['ref_genome_hg19']+".fai"
     params:
-        new_samp_name = lambda wildcards: SAMP[wildcards.sample][0]
+        new_samp_name = lambda wildcards: SAMP[wildcards.sample]
     output:
         vcf = temp(config['data_dir']+"/reheader_strs/{sample}.vcf.gz"),
         vcf_idx = temp(config['data_dir']+"/reheader_strs/{sample}.vcf.gz.tbi")

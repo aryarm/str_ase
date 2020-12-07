@@ -35,13 +35,13 @@ str_vcfs: "/storage/massaraa/scratch/str_ase/str/from_gdrive/Filtered_{sample}_h
 # see https://gymreklab.com/2018/03/05/snpstr_imputation.html for more info
 ref_panel_dir: /gymreklab-tscc/resources/datasets/snpstr/
 
-# GTEX samples, their SRA IDs, and their STR sample IDs
+# GTEX samples and their SRA IDs
 # For example:
-# GTEX-NFK9       SRR2155766      GTEX-NFK9-0004
-# GTEX-NL3H       SRR2157426      GTEX-NL3H-0009
-# GTEX-OHPM       SRR2156114      GTEX-OHPM-0003
-# GTEX-OIZF       SRR2157404      GTEX-OIZF-0004
-# GTEX-OXRN       SRR2157433      GTEX-OXRN-0003
+# GTEX-NFK9       SRR2155766
+# GTEX-NL3H       SRR2157426
+# GTEX-OHPM       SRR2156114
+# GTEX-OIZF       SRR2157404
+# GTEX-OXRN       SRR2157433
 # (where each space '       ' is a tab)
 samples_file: data/samples.tsv
 
