@@ -97,13 +97,14 @@ def get_snp_counts(snp_counts):
         usecols=columns
     )
     counts = counts.rename(new_col_names, axis=1).set_index(['chr', 'pos', 'tissue'])
-    # convert GT;0|1 to just 0|1 (ie remove the 'GT;' prefix from the column)
-    counts['snp_gt'] = counts['snp_gt'].str[len('GT;'):]
-    # now, let's switch the ref and alt count depending on which strand they live on
-    strand = counts['snp_gt'].str.split("|", n=1, expand=True)[0].to_numpy(dtype='int')
-    snp_alleles = counts[['snp_a1', 'snp_a2']].to_numpy()
-    counts['snp_a1'] = snp_alleles[range(len(counts)), strand]
-    counts['snp_a2'] = snp_alleles[range(len(counts)), ~strand]
+    if len(counts):
+        # convert GT;0|1 to just 0|1 (ie remove the 'GT;' prefix from the column)
+        counts['snp_gt'] = counts['snp_gt'].str[len('GT;'):]
+        # now, let's switch the ref and alt count depending on which strand they live on
+        strand = counts['snp_gt'].str.split("|", n=1, expand=True)[0].to_numpy(dtype='int')
+        snp_alleles = counts[['snp_a1', 'snp_a2']].to_numpy()
+        counts['snp_a1'] = snp_alleles[range(len(counts)), strand]
+        counts['snp_a2'] = snp_alleles[range(len(counts)), ~strand]
     return counts
 
 
