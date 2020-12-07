@@ -82,8 +82,8 @@ def get_snp_counts(snp_counts):
         for col in columns
     }
     new_col_names['GENOTYPE'] = 'snp_gt'
-    new_col_names['REF_ALLELE'] = 'snp_ref'
-    new_col_names['ALT_ALLELE'] = 'snp_alt'
+    new_col_names['REF_ALLELE'] = 'snp_a1'
+    new_col_names['ALT_ALLELE'] = 'snp_a2'
     # use pandas to get the datatypes of each column
     types_dict = pd.read_csv(
         snp_counts, sep="\t", header=0, nrows=5, usecols=columns
@@ -96,7 +96,15 @@ def get_snp_counts(snp_counts):
         snp_counts, sep="\t", header=0, dtype=dict(types_dict),
         usecols=columns
     )
-    return counts.rename(new_col_names, axis=1).set_index(['chr', 'pos', 'tissue'])
+    counts = counts.rename(new_col_names, axis=1).set_index(['chr', 'pos', 'tissue'])
+    # convert GT;0|1 to just 0|1 (ie remove the 'GT;' prefix from the column)
+    counts['snp_gt'] = counts['snp_gt'].str[len('GT;'):]
+    # now, let's switch the ref and alt count depending on which strand they live on
+    strand = counts['snp_gt'].str.split("|", n=1, expand=True)[0].to_numpy(dtype='int')
+    snp_alleles = counts[['snp_a1', 'snp_a2']].to_numpy()
+    counts['snp_a1'] = snp_alleles[range(len(counts)), strand]
+    counts['snp_a2'] = snp_alleles[range(len(counts)), ~strand]
+    return counts
 
 
 def get_str_counts(pairs, sample):
@@ -113,11 +121,10 @@ def get_str_counts(pairs, sample):
         str_count.insert(3, 'str_pos', STR.pos)
         str_count.insert(4, 'snp_pos', snp.pos)
         STR = STR.samples[sample]
-        str_count.insert(5, 'str_ref', STR.alleles[0])
-        str_count.insert(6, 'str_alt', STR.alleles[1])
+        str_count.insert(5, 'str_a1', STR.alleles[0])
+        str_count.insert(6, 'str_a2', STR.alleles[1])
         str_count.insert(7, 'distance', distance)
         str_count.insert(8, 'str_gt', "{}|{}".format(*STR['GT']))
-        str_count['snp_gt'] = str_count['snp_gt'].str[len('GT;'):]
         yield str_count
 
 
