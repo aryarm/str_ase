@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import argparse
+import numpy as np
 import pandas as pd
 from pysam import VariantFile
 from types import SimpleNamespace
@@ -84,6 +85,8 @@ def get_snp_counts(snp_counts):
     new_col_names['GENOTYPE'] = 'snp_gt'
     new_col_names['REF_ALLELE'] = 'snp_a1'
     new_col_names['ALT_ALLELE'] = 'snp_a2'
+    new_col_names['REF_COUNT'] = 'a1_count'
+    new_col_names['ALT_COUNT'] = 'a2_count'
     # use pandas to get the datatypes of each column
     types_dict = pd.read_csv(
         snp_counts, sep="\t", header=0, nrows=5, usecols=columns
@@ -100,11 +103,15 @@ def get_snp_counts(snp_counts):
     if len(counts):
         # convert GT;0|1 to just 0|1 (ie remove the 'GT;' prefix from the column)
         counts['snp_gt'] = counts['snp_gt'].str[len('GT;'):]
-        # now, let's switch the ref and alt count depending on which strand they live on
+        # now, let's switch the ref and alt alleles (and the ref and alt counts)
+        # depending on which strand they live on
         strand = counts['snp_gt'].str.split("|", n=1, expand=True)[0].to_numpy(dtype='int')
         snp_alleles = counts[['snp_a1', 'snp_a2']].to_numpy()
         counts['snp_a1'] = snp_alleles[range(len(counts)), strand]
-        counts['snp_a2'] = snp_alleles[range(len(counts)), ~strand]
+        counts['snp_a2'] = snp_alleles[range(len(counts)), 1-strand]
+        snp_counts = counts[['a1_count', 'a2_count']].to_numpy()
+        counts['a1_count'] = snp_counts[range(len(counts)), strand]
+        counts['a2_count'] = snp_counts[range(len(counts)), 1-strand]
     return counts
 
 
