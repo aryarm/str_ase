@@ -189,7 +189,9 @@ rule lift_counts:
         counts = config['out']+"/snp_counts/{sample}.tsv.gz"
     conda: "envs/default.yml"
     shell:
-        "scripts/liftover_counts.py {input} > {output.counts}"
+        "scripts/liftover_counts.py -i {input.chain} {input.counts} | "
+        "sed 's/^chr//' | "
+        "gzip > {output.counts}"
 
 checkpoint vcf_samples:
     """get the sample IDs from the merged VCF"""
