@@ -10,8 +10,8 @@ A python script for lifting over TSVs whose first two columns are CHROM and POS,
 ### [prioritize_STRs.py](prioritize_STRs.py)
 A python script for sorting STRs by a custom importance metric consisting of the number of supporting samples, the distance from the nearest SNP, and the strength of the ASE at the nearest SNP.
 
-### [unphase.py](unphase.py)
-A python script that can be used to unphase the genotypes in a VCF in preparation for use by BEAGLE. This script is used by the `prepare` pipeline.
-
 ### [remove_empty_alts.py](remove_empty_alts.py)
 A python script that can be used to remove variants with empty ALT records in a VCF.
+
+### [unphase.py](unphase.py)
+A python script that can be used to unphase the genotypes in a VCF in preparation for use by BEAGLE. This script is used by the `prepare` pipeline.

@@ -2,7 +2,7 @@ import csv
 from snakemake.utils import min_version
 
 ##### set minimum snakemake version #####
-min_version("5.27.3")
+min_version("5.30.1")
 
 configfile: "config.yml"
 
