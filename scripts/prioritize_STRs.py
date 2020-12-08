@@ -7,7 +7,7 @@ import pandas as pd
 # how should we weight the values that contribute to the importance metric?
 WEIGHTS = {
     'num_samples': 6,
-    'allele_variance': 5,
+    # 'allele_variance': 5,
     'distance_mean': 1,
     'ase_mean': 4,
     'ase_variance': 7
@@ -21,6 +21,10 @@ def get_ase(counts):
     """defined as abs(0.5-(a1_count/total_count))"""
     return (0.5-counts['a1_count']/counts['total_count']).abs()
 
+def get_allelic_ratio(counts):
+    """defined as ratio of a1_count/a2_count"""
+    return counts['a1_count']/counts['a2_count']
+
 def normalize(vals):
     """normalize a series of values using min/max normalization"""
     return (vals-vals.min())/(vals.max()-vals.min())
@@ -30,15 +34,16 @@ weight_sum = sum(WEIGHTS.values())
 WEIGHTS = {metric: WEIGHTS[metric]/weight_sum for metric in WEIGHTS}
 
 # calculate all of our metrics
-ase = get_ase(counts[['a1_count', 'total_count']])
+counts['ase'] = get_ase(counts[['a1_count', 'total_count']])
+counts['allelic_ratio'] = get_allelic_ratio(counts[['a1_count', 'a2_count']])
 metrics = {
     'num_samples': counts.groupby(['str', 'tissue']).size(),
-    'allele_variance': counts[['str_a1', 'str_a2']].stack().groupby(
-        ['str', 'tissue']
-    ).apply(lambda x: x.drop_duplicates().str.len().std()),
+    # 'allele_variance': counts[['str_a1', 'str_a2']].stack().groupby(
+    #     ['str', 'tissue']
+    # ).apply(lambda x: x.drop_duplicates().str.len().std()),
     'distance_mean': counts['distance'].groupby(['str', 'tissue']).mean(),
-    'ase_mean': ase.groupby(['str', 'tissue']).mean(),
-    'ase_variance': ase.groupby(['str', 'tissue']).std().fillna(0)
+    'ase_mean': counts['ase'].groupby(['str', 'tissue']).mean(),
+    'ase_variance': counts['ase'].groupby(['str', 'tissue']).std().fillna(0)
 }
 # normalize each metric
 metrics = {metric: normalize(metrics[metric]) for metric in metrics}
