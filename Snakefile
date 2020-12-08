@@ -21,7 +21,7 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 
 rule all:
     input:
-        config['out']+"/str_counts.tsv.gz"
+        config['out']+"/str_counts.sort.tsv.gz"
 
 rule lift_over:
     """lift SNP VCF from hg38 to hg19 using Picard's LiftoverVcf"""
@@ -73,7 +73,7 @@ rule vcf_merge:
         idx = temp(config['out']+"/merged.vcf.gz.tbi")
     conda: "envs/htslib.yml"
     shell:
-        "bcftools concat -Ob {input} | "
+        "bcftools concat -a -d all -Ob {input} | "
         "bcftools sort -Oz -o {output.vcf} && "
         "tabix -p vcf {output.vcf}"
 
