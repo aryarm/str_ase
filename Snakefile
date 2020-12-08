@@ -21,7 +21,7 @@ config['SAMP_NAMES'] = check_config('SAMP_NAMES', default=[])
 
 rule all:
     input:
-        config['out']+"/str_counts.sort.tsv.gz"
+        config['out']+"/results"
 
 rule lift_over:
     """lift SNP VCF from hg38 to hg19 using Picard's LiftoverVcf"""
@@ -243,4 +243,16 @@ rule prioritize:
         counts = config['out']+"/str_counts.sort.tsv.gz"
     conda: "envs/htslib.yml"
     shell:
-        "scripts/prioritize_STRs.py {input} {output}"
+        "scripts/prioritize_STRs.py {input.counts} {output.counts}"
+
+rule plot:
+    """create association models for the top n most promising STRs"""
+    input:
+        ase = rules.prioritize.output.counts
+    params:
+        n = config['num_plots']
+    output:
+        plots_dir = directory(config['out']+"/results")
+    conda: "envs/htslib.yml"
+    shell:
+        "scripts/plot_associations.py -n {params.n} {output.plots_dir} {input.ase}"

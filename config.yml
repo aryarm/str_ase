@@ -73,7 +73,6 @@ genetic_map: data/map
 # VARIANT_ANNOTATION,GENE_ID
 snp_counts: "data/snp_counts/{sample}.v8.wasp_corrected.ase_table.tsv.gz"
 
-# Which tissue IDs should be used? This must correspond with the tissue IDs in the
-# snp_counts files
-# TODO: If set to a falsey value or left empty, all tissues will be used
-tissues: [LUNG]
+# How many of the most promising STRs should we plot?
+# If set to a falsey value or commented out, 5 will be used
+num_plots: 15

@@ -8,3 +8,4 @@ dependencies:
   - conda-forge::pandas>=1.1.4
   - conda-forge::gawk>=5.1.0
   - conda-forge::coreutils>=8.31
+  - conda-forge::matplotlib>=3.3.3
