@@ -75,4 +75,4 @@ snp_counts: "data/snp_counts/{sample}.v8.wasp_corrected.ase_table.tsv.gz"
 
 # How many of the most promising STRs should we plot?
 # If set to a falsey value or commented out, 5 will be used
-num_plots: 15
+num_plots: 10

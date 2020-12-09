@@ -88,7 +88,7 @@ def get_snp_counts(snp_counts):
     new_col_names['ALT_COUNT'] = 'a2_count'
     # use pandas to get the datatypes of each column
     types_dict = pd.read_csv(
-        snp_counts, sep="\t", header=0, nrows=5, usecols=columns
+        snp_counts, sep="\t", header=0, nrows=12, usecols=columns
     ).dtypes
     # set the 'CHR' datatype to np.dtype('O') (aka object)
     types_dict['CHR'] = types_dict['TISSUE_ID']

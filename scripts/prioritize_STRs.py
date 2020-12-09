@@ -7,7 +7,7 @@ import pandas as pd
 # how should we weight the values that contribute to the importance metric?
 WEIGHTS = {
     'num_samples': 6,
-    # 'allele_variance': 5,
+    'allele_count': 5,
     'distance_mean': 1,
     'ase_mean': 4,
     'ase_variance': 7
@@ -22,8 +22,8 @@ def get_ase(counts):
     return (0.5-counts['a1_count']/counts['total_count']).abs()
 
 def get_allelic_ratio(counts):
-    """defined as ratio of a1_count/a2_count"""
-    return counts['a1_count']/counts['a2_count']
+    """defined as ratio of (a1_count+1)/(a2_count+1)"""
+    return (counts['a1_count']+1)/(counts['a2_count']+1)
 
 def normalize(vals):
     """normalize a series of values using min/max normalization"""
@@ -33,14 +33,22 @@ def normalize(vals):
 weight_sum = sum(WEIGHTS.values())
 WEIGHTS = {metric: WEIGHTS[metric]/weight_sum for metric in WEIGHTS}
 
+# remove samples with binom_p_adjusted < 0.2
+# so that we're only using STRs with significant allele specific expression
+PVAL_CUTOFF = sys.argv[3] if len(sys.argv) >= 4 else 0.2
+counts = counts[counts['binom_p_adjusted'] < PVAL_CUTOFF]
+
+# remove STRs with only one sample
+counts = counts.groupby(['str', 'tissue']).filter(lambda x: len(x) > 1)
+
 # calculate all of our metrics
 counts['ase'] = get_ase(counts[['a1_count', 'total_count']])
 counts['allelic_ratio'] = get_allelic_ratio(counts[['a1_count', 'a2_count']])
 metrics = {
     'num_samples': counts.groupby(['str', 'tissue']).size(),
-    # 'allele_variance': counts[['str_a1', 'str_a2']].stack().groupby(
-    #     ['str', 'tissue']
-    # ).apply(lambda x: x.drop_duplicates().str.len().std()),
+    'allele_count': counts[['str_a1', 'str_a2']].groupby(['str', 'tissue']).apply(
+        lambda x: len(pd.unique(x.values.ravel('K')))
+    ),
     'distance_mean': counts['distance'].groupby(['str', 'tissue']).mean(),
     'ase_mean': counts['ase'].groupby(['str', 'tissue']).mean(),
     'ase_variance': counts['ase'].groupby(['str', 'tissue']).std().fillna(0)
