@@ -142,7 +142,8 @@ rule beagle:
         log = temp(config['out']+"/phased/snp.str.chr{chr}.ungz.log")
     conda: "envs/default.yml"
     shell:
-        "java -jar {input.beagle} gt={input.gt} ref={input.ref} out={params.vcf_prefix} map={input.genetic_map} chrom={params.region}"
+        "java -jar {input.beagle} gt={input.gt} ref={input.ref} out={params.vcf_prefix} "
+        "map={input.genetic_map} chrom={params.region} impute=false"
 
 rule index_beagle:
     """properly bgzip the output of beagle and add contigs to the header"""
