@@ -1,4 +1,4 @@
-[![Snakemake](https://img.shields.io/badge/snakemake-≥5.30.1-brightgreen.svg?style=flat-square)](https://snakemake.bitbucket.io)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥5.30.2-brightgreen.svg?style=flat-square)](https://snakemake.bitbucket.io)
 
 # str_ase
 Allele-specific expression (ASE) for short tandem repeats (STRs)
@@ -11,9 +11,9 @@ git clone https://github.com/aryarm/str_ase
 [Example data](#data) for the pipeline is also available for download upon request.
 
 # setup
-The pipeline is written as a Snakefile which can be executed via [Snakemake](https://snakemake.readthedocs.io). For reproduciblity, we recommend installing version 5.30.1:
+The pipeline is written as a Snakefile which can be executed via [Snakemake](https://snakemake.readthedocs.io). For reproduciblity, we recommend installing version 5.30.2:
 ```
-conda create -n snakemake -c conda-forge --no-channel-priority 'bioconda::snakemake==5.30.1'
+conda create -n snakemake -c conda-forge --no-channel-priority 'bioconda::snakemake==5.30.2'
 ```
 We highly recommend you install [Snakemake via conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html#installation-via-conda) like this so that you can use the `--use-conda` flag when calling `snakemake` to let it [automatically handle all dependencies](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#integrated-package-management) of the pipeline. Otherwise, you must manually install the dependencies listed in the [env files](env/).
 
